@@ -1,4 +1,4 @@
-const {writeMetadata, getMetadata} = require('./logger')
+const {writeMetadata, getMetadata, checkFolderSize} = require('./logger')
 const fs = require('fs');
 
 // Take in the request & filepath, stream the file to the filePath
@@ -31,8 +31,17 @@ const uploadFile = (req, filePath) => {
    // Also, resolve the location of the file to calling function and write metadata
    stream.on('close', () => {
     console.log('Processing  ...  100%');
+
+    //log file uploading finish
     fs.appendFileSync("stdout.txt", `Finished saving file ${filename}`+ '\n');
     fs.appendFileSync("stdout.txt", new Date(Date.now()).toString() + '\n');
+
+    //check if folder is bigger than 10 mb and log if true
+    if (checkFolderSize('./data') > 10^6 * 10) {
+      fs.appendFileSync("stdout.txt", `WARNING: Size of the folder exceeded 10 mb!`+ '\n');
+    }
+
+    //write metadata to the database
     const mimeType = req.headers['content-type'];
     const size = parseInt(stream.bytesWritten);
     writeMetadata(filename, mimeType, size)

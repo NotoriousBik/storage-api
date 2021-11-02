@@ -6,3 +6,13 @@ Start saving file 111
 Mon Nov 01 2021 18:31:47 GMT+0600 (Восточный Казахстан)
 Finished saving file 111
 Mon Nov 01 2021 18:31:47 GMT+0600 (Восточный Казахстан)
+Start saving file 1112
+Tue Nov 02 2021 10:58:10 GMT+0600 (Восточный Казахстан)
+Finished saving file 1112
+Tue Nov 02 2021 10:58:10 GMT+0600 (Восточный Казахстан)
+WARNING: Size of the folder exceeded 10 mb!
+Start saving file 1112
+Tue Nov 02 2021 10:59:13 GMT+0600 (Восточный Казахстан)
+Finished saving file 1112
+Tue Nov 02 2021 10:59:13 GMT+0600 (Восточный Казахстан)
+WARNING: Size of the folder exceeded 10 mb!
