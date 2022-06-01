@@ -1,8 +1,9 @@
 const app = require('express')();
-const fs = require('fs');
 const path = require('path');
 const connectDB = require('./db/connect');
-const {uploadFile, downloadFile} = require('./adapter');
+const { uploadFile, downloadFile } = require('./app.service');
+const fs = require('fs')
+
 require('dotenv').config();
 const port = process.env.PORT || 3000;
 
@@ -10,26 +11,29 @@ const port = process.env.PORT || 3000;
 app.get('/', (req, res) => {
 	res.status(200).send('Server up and running');
 });
- 
+
 //file uploading
 app.put('/files/:filename', (req, res) => {
-	const { filename: filename } = req.params;
+	const dir = './data';
+
+	if (!fs.existsSync(dir)) {
+		fs.mkdirSync(dir);
+	}
+	const { filename } = req.params;
 	const filePath = path.join(__dirname, `/data/${filename}`);
 	uploadFile(req, filePath)
-		.then(path => res.send({ status: 'success', path }))
-		.catch(err => res.send({ status: 'error', err }));
+		.then(() => res.send({ filename }))
+		.catch(err => res.status(500).send('Internal server error'));
 
 });
 
 //file downloading
 app.get('/files/:filename', (req, res) => {
-	const { filename: filename } = req.params;
-	const filePath = path.join(`./data/${filename}`);
-	downloadFile(req, res, filePath);
-
+	const { filename } = req.params;
+	downloadFile(req, res, filename);
 });
 
-//check if database connection is established than start server
+//check if database connection is established than start the server
 const start = async () => {
 	try {
 		await connectDB(process.env.MONGO_URI);
