@@ -1,15 +1,13 @@
 const { Logger, checkFolderSize } = require('./logger');
 const { getMetadata, writeMetadata } = require('./storage');
-const fs = require('fs')
+const fs = require('fs');
 const logger = new Logger();
 const path = require('path');
+const { APIError, HttpStatusCode } = require('./errors/error');
 
 
-// Take in the request & filepath, stream the file to the filePath
-const uploadFile = (req, filePath) => {
+const uploadFile = (req, filePath, filename) => {
 
-
-	const { filename } = req.params;
 	return new Promise((resolve, reject) => {
 		const stream = fs.createWriteStream(filePath);
 		stream.on('open', () => {
@@ -20,8 +18,6 @@ const uploadFile = (req, filePath) => {
 			req.pipe(stream);
 		});
 
-		// Drain is fired whenever a data chunk is written.
-		// When that happens, print how much data has been written yet.
 		stream.on('drain', () => {
 			const written = parseInt(stream.bytesWritten);
 			const total = parseInt(req.headers['content-length']);
@@ -29,8 +25,6 @@ const uploadFile = (req, filePath) => {
 			console.log(`Processing  ...  ${pWritten}% done`);
 		});
 
-		// When the stream is finished, print a final message
-		// Also, resolve the location of the file to calling function and write metadata
 		stream.on('close', () => {
 			console.log('Processing  ...  100%');
 
@@ -46,7 +40,7 @@ const uploadFile = (req, filePath) => {
 				const size = parseInt(stream.bytesWritten);
 				writeMetadata(filename, mimeType, size);
 			} catch (e) {
-				console.log(e);
+				logger.error(e);
 			}
 
 			resolve(filePath);
@@ -60,20 +54,19 @@ const uploadFile = (req, filePath) => {
 	});
 };
 
-
-// Take in the request & filepath, stream the file to the filePath
-const downloadFile = async (req, res, filename) => {
-	const dir = './data';
-
+const downloadFile = async (req, res, filename, next) => {
+	const dir = __dirname + `/data`;
 	if (!fs.existsSync(dir)) {
-		res.status(404).send('File not found')
-	}
+		return next(new APIError('File not found', 404));
+	};
 	try {
-		const metadata = await getMetadata(req, res, filename);
-	} catch (e) {
-		return res.status(404).send('File not found')
+		const metadata = await getMetadata(req, res, filename, next);
+		if (metadata) {
+			return res.download(path.join(`./data/${filename}`));
+		}
+	} catch (error) {
+		logger.error(error);
 	}
-	return res.download(path.join(`./data/${filename}`));
 };
 
 

@@ -6,10 +6,6 @@ const HttpStatusCode = {
 }
 
 class BaseError extends Error {
-  name;
-  httpCode;
-  isOperational;
-
   constructor(name, httpCode, description, isOperational) {
     super(description);
     Object.setPrototypeOf(this, new.target.prototype);
@@ -23,9 +19,9 @@ class BaseError extends Error {
 }
 
 class APIError extends BaseError {
-  constructor(name, httpCode = HttpStatusCode.INTERNAL_SERVER, isOperational = true, description = 'internal server error') {
+  constructor(name, httpCode = HttpStatusCode.INTERNAL_SERVER, isOperational = true, description = 'Internal server error') {
     super(name, httpCode, isOperational, description);
   }
 }
 
-module.exports = ({ APIError })
+module.exports = ({ APIError, HttpStatusCode })

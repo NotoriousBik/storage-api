@@ -6,18 +6,18 @@ const path = require('path');
 class Logger {
 
   log = (text) => {
-    console.log('stdout.txt', `${new Date(Date.now()).toString()}: ${text}\n`)
+    console.log(text)
     fs.appendFileSync('stdout.txt', `${new Date(Date.now()).toString()}: ${text}\n`);
   }
 
   error = (text) => {
-    console.log('stdout.txt', `${new Date(Date.now()).toString()}: ${text}\n`)
+    console.log(text)
     fs.appendFileSync('stderr.txt', `${new Date(Date.now()).toString()}: ${text}\n`);
   }
 
 }
 
-//get files metadata
+//check folder size
 const checkFolderSize = async (dirPath) => {
 
   //function which returns all files in a folder
